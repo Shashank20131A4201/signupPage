@@ -52,7 +52,7 @@ async def signup(
 ):
    
     cur = conn.cursor()
-    cur.execute("INSERT INTO users1 (uname,email,password1,password2) VALUES (%s, %s,%s, %s)", (username,email,password1,password2))
+    cur.execute("INSERT INTO users(Username,Email,Password_) VALUES (%s, %s,%s)", (username,email,password1))
     conn.commit()
     cur.close() 
  
@@ -69,13 +69,13 @@ async def do_login(
     password: str = Form(...),
 ):
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users1 WHERE uname=%s and password1=%s", (username,password))
+    cur.execute("SELECT * FROM users WHERE Username=%s and Password_=%s", (username,password))
     existing_user = cur.fetchone()
     cur.close()
     
     if existing_user:
         print(existing_user)
-        return RedirectResponse("/map", status_code=303)
+        return RedirectResponse("/home", status_code=303)
     
     else:
         return JSONResponse(status_code=401, content={"message": "Wrong credentials"})
@@ -87,18 +87,18 @@ def homepage(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
 
 
-@app.get("/map")
-def homepage(request: Request):
-    return templates.TemplateResponse("map.html", {"request": request})
+# @app.get("/map")
+# def homepage(request: Request):
+#     return templates.TemplateResponse("map.html", {"request": request})
 
-@app.get("/home")
-def homepage(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request})
+# @app.get("/home")
+# def homepage(request: Request):
+#     return templates.TemplateResponse("home.html", {"request": request})
 
 
-@app.get("/profile")
-def homepage(request: Request):
-    return templates.TemplateResponse("profile.html", {"request": request})
+# @app.get("/profile")
+# def homepage(request: Request):
+#     return templates.TemplateResponse("profile.html", {"request": request})
 
 
 # @app.get("/login", response_class=HTMLResponse)
@@ -106,28 +106,28 @@ def homepage(request: Request):
 #     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@app.post("/predict")
-def predict():
-    text=request.get_json().get("message")
-    response=get_response(text)
-    message={"answer":response}
-    return jsonify(message)
+# @app.post("/predict")
+# def predict():
+#     text=request.get_json().get("message")
+#     response=get_response(text)
+#     message={"answer":response}
+#     return jsonify(message)
 
 
-@app.get('/video_feed1')
-def video_feed1():
-    return StreamingResponse(management("recording.mp4","CarPosition",10), media_type='multipart/x-mixed-replace; boundary=frame')
-@app.get('/video_feed2')
-def video_feed2():
-    return StreamingResponse(management("CMR_bike.mp4","bikepickle",4), media_type='multipart/x-mixed-replace; boundary=frame')
-@app.get('/value1')
-def values1():
-    data = {"value":updatedValues1()}
-    return JSONResponse(content=data)
-@app.get('/value2')
-def values2():
-    data = {"value":updatedValues2()}
-    return JSONResponse(content=data)
+# @app.get('/video_feed1')
+# def video_feed1():
+#     return StreamingResponse(management("recording.mp4","CarPosition",10), media_type='multipart/x-mixed-replace; boundary=frame')
+# @app.get('/video_feed2')
+# def video_feed2():
+#     return StreamingResponse(management("CMR_bike.mp4","bikepickle",4), media_type='multipart/x-mixed-replace; boundary=frame')
+# @app.get('/value1')
+# def values1():
+#     data = {"value":updatedValues1()}
+#     return JSONResponse(content=data)
+# @app.get('/value2')
+# def values2():
+#     data = {"value":updatedValues2()}
+#     return JSONResponse(content=data)
 
 if __name__ == '__main__':
    uvicorn.run(app, host='0.0.0.0', port=8000)
